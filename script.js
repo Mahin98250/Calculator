@@ -1,61 +1,79 @@
-const screen = document.getElementById("screen");
+const screen = document.getElementById('screen');
+const historyEl = document.getElementById('history');
 
-let expression = "";
+let expression = '';
+let lastResult = '';
 
-document.querySelectorAll("button").forEach(button=>{
-
-button.addEventListener("click",()=>{
-
-const value = button.innerText;
-
-if(value==="AC"){
-
-expression="";
-
-screen.innerText="0";
-
-return;
-
+function formatNumber(value) {
+  if (value === '' || value === null || value === undefined) return '0';
+  const str = String(value);
+  if (str === 'Infinity' || str === '-Infinity' || str === 'NaN') return 'Error';
+  return str.length > 16 ? Number(str).toPrecision(12).replace(/\.?0+$/, '') : str;
 }
 
-if(value==="⌫"){
-
-expression=expression.slice(0,-1);
-
-screen.innerText=expression||"0";
-
-return;
-
+function updateDisplay() {
+  screen.innerText = expression || '0';
+  historyEl.innerText = lastResult ? `= ${formatNumber(lastResult)}` : '';
 }
 
-if(value==="="){
-
-try{
-
-let result=eval(expression.replace(/×/g,"*").replace(/÷/g,"/"));
-
-screen.innerText=result;
-
-expression=result.toString();
-
+function sanitizeExpression(value) {
+  return value
+    .replace(/×/g, '*')
+    .replace(/÷/g, '/')
+    .replace(/−/g, '-')
+    .replace(/\s+/g, '');
 }
 
-catch{
-
-screen.innerText="Error";
-
-expression="";
-
+function clearAll() {
+  expression = '';
+  lastResult = '';
+  updateDisplay();
 }
 
-return;
-
+function backspace() {
+  expression = expression.slice(0, -1);
+  updateDisplay();
 }
 
-expression+=value;
+function evaluateExpression() {
+  if (!expression) return;
 
-screen.innerText=expression;
+  try {
+    const result = Function(`'use strict'; return (${sanitizeExpression(expression)});`)();
+    lastResult = result;
+    expression = formatNumber(result);
+    screen.innerText = expression;
+    historyEl.innerText = `= ${formatNumber(result)}`;
+  } catch {
+    expression = '';
+    lastResult = '';
+    screen.innerText = 'Error';
+    historyEl.innerText = '';
+  }
+}
 
+document.querySelectorAll('button').forEach((button) => {
+  button.addEventListener('click', () => {
+    const value = button.innerText;
+
+    if (value === 'AC') {
+      clearAll();
+      return;
+    }
+
+    if (value === '⌫') {
+      backspace();
+      return;
+    }
+
+    if (value === '=') {
+      evaluateExpression();
+      return;
+    }
+
+    expression += value;
+    updateDisplay();
+  });
 });
 
-});
+updateDisplay();
