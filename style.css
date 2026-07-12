@@ -228,7 +228,18 @@ h1 {
   backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, filter 180ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.key::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.36), transparent 36%);
+  opacity: 0.45;
+  transition: opacity 180ms ease;
 }
 
 .key:hover {
@@ -237,8 +248,29 @@ h1 {
   background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.12));
 }
 
-.key:active {
-  transform: translateY(1px) scale(0.98);
+.key:hover::before {
+  opacity: 0.7;
+}
+
+.key:active,
+.key.is-pressed {
+  transform: translateY(1px) scale(0.975);
+  filter: brightness(1.08) saturate(1.1);
+}
+
+.key.is-pressed::before {
+  opacity: 0.9;
+}
+
+.key::after {
+  content: '';
+  position: absolute;
+  inset: 18% 14% auto 14%;
+  height: 34%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.42), transparent);
+  opacity: 0.42;
+  transform: translateY(-2px);
 }
 
 .key--operator {
@@ -260,6 +292,12 @@ h1 {
 
 .key--wide {
   grid-column: span 2;
+}
+
+.key--operator::before,
+.key--utility::before,
+.key--equal::before {
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.44), transparent 38%);
 }
 
 @keyframes drift {
