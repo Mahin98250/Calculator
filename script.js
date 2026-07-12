@@ -1,5 +1,5 @@
-const screen = document.getElementById('screen');
-const historyEl = document.getElementById('history');
+const expressionEl = document.getElementById('expression');
+const resultEl = document.getElementById('result');
 const glow = document.getElementById('calculatorGlow');
 const calculator = document.querySelector('.calculator');
 
@@ -11,12 +11,19 @@ function formatNumber(value) {
   if (value === '' || value === null || value === undefined) return '0';
   const str = String(value);
   if (str === 'Infinity' || str === '-Infinity' || str === 'NaN') return 'Error';
+  
+  // Handle very large or very small numbers
+  const num = parseFloat(str);
+  if (Math.abs(num) > 1e10) {
+    return num.toExponential(8).replace(/\.?0+e/, 'e');
+  }
+  
   return str.length > 16 ? Number(str).toPrecision(12).replace(/\.?0+$/, '') : str;
 }
 
 function updateDisplay() {
-  screen.innerText = expression || '0';
-  historyEl.innerText = lastResult ? `= ${formatNumber(lastResult)}` : '';
+  expressionEl.innerText = expression || '0';
+  resultEl.innerText = lastResult ? formatNumber(lastResult) : '0';
 }
 
 function sanitizeExpression(value) {
@@ -37,14 +44,15 @@ function flashButton(button, xPercent = 50, yPercent = 35) {
   button.style.setProperty('--press-x', `${xPercent}%`);
   button.style.setProperty('--press-y', `${yPercent}%`);
   button.classList.remove('is-pressed');
-  void button.offsetWidth;
+  void button.offsetWidth; // Trigger reflow
   button.classList.add('is-pressed');
+  
   clearTimeout(button._pressTimer);
   button._pressTimer = setTimeout(() => button.classList.remove('is-pressed'), 260);
 }
 
 function isOperatorChar(char) {
-  return ['+', '-', '×', '÷'].includes(char);
+  return ['+', '-', '×', '÷', '−'].includes(char);
 }
 
 function clearAll() {
@@ -65,7 +73,7 @@ function backspace() {
 
 function normalizeOperators() {
   expression = expression
-    .replace(/[+\-×÷]{2,}$/g, (match) => match.slice(-1))
+    .replace(/[+\-×÷−]{2,}$/g, (match) => match.slice(-1))
     .replace(/\s+/g, '');
 }
 
@@ -78,22 +86,25 @@ function appendValue(value) {
 
   const lastChar = expression[expression.length - 1];
 
+  // Handle decimal point
   if (value === '.') {
-    const segments = expression.split(/[+\-×÷]/);
+    const segments = expression.split(/[+\-×÷−]/);
     const currentSegment = segments[segments.length - 1] || '';
-    if (currentSegment.includes('.')) return;
+    
+    if (currentSegment.includes('.')) return; // Already has decimal
     if (!expression || isOperatorChar(lastChar)) {
-      expression += '0';
+      expression += '0'; // Add 0 before decimal if needed
     }
     expression += '.';
     updateDisplay();
     return;
   }
 
+  // Handle operators
   if (isOperatorChar(value)) {
-    if (!expression && value !== '-') return;
+    if (!expression && value !== '-' && value !== '−') return; // Can't start with operator (except minus)
     if (isOperatorChar(lastChar)) {
-      expression = expression.slice(0, -1) + value;
+      expression = expression.slice(0, -1) + value; // Replace last operator
     } else {
       expression += value;
     }
@@ -102,6 +113,7 @@ function appendValue(value) {
     return;
   }
 
+  // Handle numbers
   expression += value;
   updateDisplay();
 }
@@ -110,25 +122,32 @@ function evaluateExpression() {
   if (!expression) return;
 
   try {
-    const result = Function(`'use strict'; return (${sanitizeExpression(expression)});`)();
+    const sanitized = sanitizeExpression(expression);
+    const result = Function(`'use strict'; return (${sanitized});`)();
+    
     lastResult = result;
     expression = formatNumber(result);
-    screen.innerText = expression;
-    historyEl.innerText = `= ${formatNumber(result)}`;
+    resultEl.innerText = expression;
+    expressionEl.innerText = '';
     justEvaluated = true;
-  } catch {
+  } catch (error) {
     expression = '';
     lastResult = '';
     justEvaluated = false;
-    screen.innerText = 'Error';
-    historyEl.innerText = '';
+    resultEl.innerText = 'Error';
+    expressionEl.innerText = '';
   }
 }
 
 function getButtonFromKey(key) {
   return [...document.querySelectorAll('.liquid-key')].find((btn) => {
     const value = btn.innerText.trim();
-    return value === key || (key === '*' && value === '×') || (key === '/' && value === '÷') || (key === 'Enter' && value === '=');
+    return (
+      value === key ||
+      (key === '*' && value === '×') ||
+      (key === '/' && value === '÷') ||
+      (key === 'Enter' && value === '=')
+    );
   });
 }
 
@@ -163,8 +182,11 @@ function handleButtonAction(button) {
 
   if (value === '±') {
     if (!expression) return;
-    if (expression.startsWith('-')) expression = expression.slice(1);
-    else expression = `-${expression}`;
+    if (expression.startsWith('-')) {
+      expression = expression.slice(1);
+    } else {
+      expression = `-${expression}`;
+    }
     updateDisplay();
     return;
   }
@@ -172,25 +194,27 @@ function handleButtonAction(button) {
   if (action === 'percent') {
     if (!expression) return;
     try {
-      const result = Function(`'use strict'; return (${sanitizeExpression(expression)})/100;`)();
+      const sanitized = sanitizeExpression(expression);
+      const result = Function(`'use strict'; return (${sanitized})/100;`)();
       expression = formatNumber(result);
       lastResult = result;
       justEvaluated = true;
       updateDisplay();
-    } catch {
+    } catch (error) {
       expression = '';
       lastResult = '';
-      screen.innerText = 'Error';
-      historyEl.innerText = '';
+      resultEl.innerText = 'Error';
+      expressionEl.innerText = '';
     }
     return;
   }
 
-  if (/^[0-9.]$/.test(value) || ['+', '−', '×', '÷'].includes(value)) {
+  if (/^[0-9.]$/.test(value) || ['+', '−', '×', '÷', '-'].includes(value)) {
     appendValue(value);
   }
 }
 
+// Add event listeners to all buttons
 document.querySelectorAll('.liquid-key').forEach((button) => {
   button.addEventListener('pointerdown', (event) => {
     attachPressEffects(button, event);
@@ -201,6 +225,7 @@ document.querySelectorAll('.liquid-key').forEach((button) => {
   });
 });
 
+// Mouse move glow effect
 window.addEventListener('pointermove', (event) => {
   if (!calculator) return;
   const rect = calculator.getBoundingClientRect();
@@ -209,11 +234,15 @@ window.addEventListener('pointermove', (event) => {
   setGlowPosition(x, y);
 });
 
+// Keyboard support
 window.addEventListener('keydown', (event) => {
   const key = event.key;
   const button = getButtonFromKey(key);
 
-  if (button) attachPressEffects(button, event);
+  if (button) {
+    event.preventDefault();
+    attachPressEffects(button, event);
+  }
 
   if (/^[0-9]$/.test(key)) {
     appendValue(key);
@@ -241,6 +270,7 @@ window.addEventListener('keydown', (event) => {
   }
 
   if (key === '/') {
+    event.preventDefault();
     appendValue('÷');
     return;
   }
@@ -252,6 +282,7 @@ window.addEventListener('keydown', (event) => {
   }
 
   if (key === 'Backspace') {
+    event.preventDefault();
     backspace();
     return;
   }
@@ -261,4 +292,5 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+// Initialize display
 updateDisplay();
