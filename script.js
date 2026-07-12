@@ -24,6 +24,14 @@ function sanitizeExpression(value) {
     .replace(/\s+/g, '');
 }
 
+function flashButton(button) {
+  button.classList.remove('is-pressed');
+  void button.offsetWidth;
+  button.classList.add('is-pressed');
+  clearTimeout(button._pressTimer);
+  button._pressTimer = setTimeout(() => button.classList.remove('is-pressed'), 220);
+}
+
 function clearAll() {
   expression = '';
   lastResult = '';
@@ -52,8 +60,14 @@ function evaluateExpression() {
   }
 }
 
+function handleValue(value) {
+  expression += value;
+  updateDisplay();
+}
+
 document.querySelectorAll('button').forEach((button) => {
   button.addEventListener('click', () => {
+    flashButton(button);
     const value = button.innerText;
 
     if (value === 'AC') {
@@ -71,9 +85,60 @@ document.querySelectorAll('button').forEach((button) => {
       return;
     }
 
-    expression += value;
-    updateDisplay();
+    handleValue(value);
   });
+});
+
+window.addEventListener('keydown', (event) => {
+  const key = event.key;
+  const button = [...document.querySelectorAll('button')].find((btn) => btn.innerText === key || (key === '*' && btn.innerText === '×') || (key === '/' && btn.innerText === '÷'));
+
+  if (button) flashButton(button);
+
+  if (/^[0-9]$/.test(key)) {
+    handleValue(key);
+    return;
+  }
+
+  if (key === '.') {
+    handleValue('.');
+    return;
+  }
+
+  if (key === '+') {
+    handleValue('+');
+    return;
+  }
+
+  if (key === '-') {
+    handleValue('−');
+    return;
+  }
+
+  if (key === '*') {
+    handleValue('×');
+    return;
+  }
+
+  if (key === '/') {
+    handleValue('÷');
+    return;
+  }
+
+  if (key === 'Enter' || key === '=') {
+    event.preventDefault();
+    evaluateExpression();
+    return;
+  }
+
+  if (key === 'Backspace') {
+    backspace();
+    return;
+  }
+
+  if (key === 'Escape') {
+    clearAll();
+  }
 });
 
 updateDisplay();
