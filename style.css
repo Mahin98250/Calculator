@@ -137,9 +137,10 @@ body {
 .calculator__glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 18%), rgba(130, 203, 255, 0.28), transparent 22%);
-  opacity: 0.55;
+  background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 18%), rgba(130, 203, 255, 0.32), transparent 22%);
+  opacity: 0.62;
   mix-blend-mode: screen;
+  transition: background 120ms linear, opacity 160ms ease;
 }
 
 .calculator__top {
@@ -237,7 +238,7 @@ h1 {
   backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, filter 180ms ease;
+  transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, filter 180ms ease;
   position: relative;
   overflow: hidden;
   --press-x: 50%;
@@ -276,12 +277,12 @@ h1 {
 
 .key:active,
 .key.is-pressed {
-  transform: translateY(1px) scale(0.975);
+  transform: translateY(1px) scale(0.968);
   filter: brightness(1.08) saturate(1.1);
 }
 
 .key.is-pressed {
-  animation: liquid-pulse 260ms cubic-bezier(.22,1.35,.36,1) both;
+  animation: liquid-pulse 260ms cubic-bezier(.18,1.2,.32,1) both;
 }
 
 .key.is-pressed::before {
@@ -325,9 +326,9 @@ h1 {
 }
 
 @keyframes liquid-pulse {
-  0% { box-shadow: inherit; }
-  35% { transform: translateY(1px) scale(0.965); }
-  100% { transform: translateY(1px) scale(0.975); }
+  0% { transform: translateY(1px) scale(0.962); }
+  55% { transform: translateY(1px) scale(0.975); }
+  100% { transform: translateY(1px) scale(0.968); }
 }
 
 @media (max-width: 480px) {
