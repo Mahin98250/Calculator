@@ -1,60 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Glass Calculator</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apple Glass Calculator</title>
+  <meta name="description" content="An elegant Apple-inspired glass morphism calculator." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <main class="scene">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="noise"></div>
 
-<div class="background"></div>
+    <section class="calculator" aria-label="Calculator">
+      <header class="calculator__top">
+        <div>
+          <p class="eyebrow">Glass Morphism</p>
+          <h1>Calculator</h1>
+        </div>
+        <div class="mode-pill" id="modePill">Standard</div>
+      </header>
 
-<div class="calculator">
+      <section class="display" aria-live="polite" aria-atomic="true">
+        <div class="expression" id="expression">0</div>
+        <div class="result" id="result">0</div>
+      </section>
 
-    <div class="display">
+      <section class="keys" aria-label="Calculator keys">
+        <button class="key key--utility" data-action="clear">AC</button>
+        <button class="key key--utility" data-action="sign">±</button>
+        <button class="key key--utility" data-action="percent">%</button>
+        <button class="key key--operator" data-value="÷">÷</button>
 
-        <div id="history"></div>
+        <button class="key" data-value="7">7</button>
+        <button class="key" data-value="8">8</button>
+        <button class="key" data-value="9">9</button>
+        <button class="key key--operator" data-value="×">×</button>
 
-        <div id="screen">0</div>
+        <button class="key" data-value="4">4</button>
+        <button class="key" data-value="5">5</button>
+        <button class="key" data-value="6">6</button>
+        <button class="key key--operator" data-value="-">−</button>
 
-    </div>
+        <button class="key" data-value="1">1</button>
+        <button class="key" data-value="2">2</button>
+        <button class="key" data-value="3">3</button>
+        <button class="key key--operator" data-value="+">+</button>
 
-    <div class="buttons">
+        <button class="key key--wide" data-value="0">0</button>
+        <button class="key" data-value=".">.</button>
+        <button class="key key--operator key--equal" data-action="equals">=</button>
+        <button class="key key--utility" data-action="backspace">⌫</button>
+      </section>
+    </section>
+  </main>
 
-        <button class="clear">AC</button>
-        <button class="operator">÷</button>
-        <button class="operator">×</button>
-        <button class="operator">⌫</button>
-
-        <button>7</button>
-        <button>8</button>
-        <button>9</button>
-        <button class="operator">-</button>
-
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
-        <button class="operator">+</button>
-
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button class="equal">=</button>
-
-        <button class="zero">0</button>
-        <button>.</button>
-
-    </div>
-
-</div>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
