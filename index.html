@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Apple Glass Calculator</title>
-  <meta name="description" content="An elite Apple-inspired liquid glass calculator." />
+  <meta name="description" content="An elite Apple-inspired liquid glass calculator with morphism design." />
+  <meta name="theme-color" content="#040712" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -36,30 +37,30 @@
       </section>
 
       <section class="keys" aria-label="Calculator keys">
-        <button class="key key--utility liquid-key" data-action="clear">AC</button>
-        <button class="key key--utility liquid-key" data-action="sign">±</button>
-        <button class="key key--utility liquid-key" data-action="percent">%</button>
-        <button class="key key--operator liquid-key" data-value="÷">÷</button>
+        <button class="key key--utility liquid-key" data-action="clear" title="Clear">AC</button>
+        <button class="key key--utility liquid-key" data-action="sign" title="Toggle sign">±</button>
+        <button class="key key--utility liquid-key" data-action="percent" title="Percentage">%</button>
+        <button class="key key--operator liquid-key" data-value="÷" title="Divide">÷</button>
 
         <button class="key liquid-key" data-value="7">7</button>
         <button class="key liquid-key" data-value="8">8</button>
         <button class="key liquid-key" data-value="9">9</button>
-        <button class="key key--operator liquid-key" data-value="×">×</button>
+        <button class="key key--operator liquid-key" data-value="×" title="Multiply">×</button>
 
         <button class="key liquid-key" data-value="4">4</button>
         <button class="key liquid-key" data-value="5">5</button>
         <button class="key liquid-key" data-value="6">6</button>
-        <button class="key key--operator liquid-key" data-value="−">−</button>
+        <button class="key key--operator liquid-key" data-value="−" title="Subtract">−</button>
 
         <button class="key liquid-key" data-value="1">1</button>
         <button class="key liquid-key" data-value="2">2</button>
         <button class="key liquid-key" data-value="3">3</button>
-        <button class="key key--operator liquid-key" data-value="+">+</button>
+        <button class="key key--operator liquid-key" data-value="+" title="Add">+</button>
 
         <button class="key key--wide liquid-key" data-value="0">0</button>
         <button class="key liquid-key" data-value=".">.</button>
-        <button class="key key--operator key--equal liquid-key" data-action="equals">=</button>
-        <button class="key key--utility liquid-key" data-action="backspace">⌫</button>
+        <button class="key key--operator key--equal liquid-key" data-action="equals" title="Equals">=</button>
+        <button class="key key--utility liquid-key" data-action="backspace" title="Backspace">⌫</button>
       </section>
     </section>
   </main>
