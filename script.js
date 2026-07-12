@@ -23,7 +23,7 @@ function formatNumber(value) {
 
 function updateDisplay() {
   expressionEl.innerText = expression || '0';
-  resultEl.innerText = lastResult ? formatNumber(lastResult) : '0';
+  resultEl.innerText = lastResult && !justEvaluated ? formatNumber(lastResult) : '';
 }
 
 function sanitizeExpression(value) {
@@ -123,7 +123,8 @@ function evaluateExpression() {
 
   try {
     const sanitized = sanitizeExpression(expression);
-    const result = Function(`'use strict'; return (${sanitized});`)();
+    // Simple eval with validation
+    const result = new Function(`'use strict'; return (${sanitized})`)();
     
     lastResult = result;
     expression = formatNumber(result);
@@ -131,11 +132,16 @@ function evaluateExpression() {
     expressionEl.innerText = '';
     justEvaluated = true;
   } catch (error) {
+    resultEl.innerText = 'Error';
+    expressionEl.innerText = '';
     expression = '';
     lastResult = '';
     justEvaluated = false;
-    resultEl.innerText = 'Error';
-    expressionEl.innerText = '';
+    
+    // Reset after showing error
+    setTimeout(() => {
+      updateDisplay();
+    }, 1500);
   }
 }
 
@@ -187,6 +193,7 @@ function handleButtonAction(button) {
     } else {
       expression = `-${expression}`;
     }
+    justEvaluated = false;
     updateDisplay();
     return;
   }
@@ -195,7 +202,7 @@ function handleButtonAction(button) {
     if (!expression) return;
     try {
       const sanitized = sanitizeExpression(expression);
-      const result = Function(`'use strict'; return (${sanitized})/100;`)();
+      const result = new Function(`'use strict'; return (${sanitized})/100`)();
       expression = formatNumber(result);
       lastResult = result;
       justEvaluated = true;
@@ -205,11 +212,14 @@ function handleButtonAction(button) {
       lastResult = '';
       resultEl.innerText = 'Error';
       expressionEl.innerText = '';
+      setTimeout(() => {
+        updateDisplay();
+      }, 1500);
     }
     return;
   }
 
-  if (/^[0-9.]$/.test(value) || ['+', '−', '×', '÷', '-'].includes(value)) {
+  if (/^[0-9.]$/.test(value) || ['+', '−', '×', '÷'].includes(value)) {
     appendValue(value);
   }
 }
@@ -237,58 +247,76 @@ window.addEventListener('pointermove', (event) => {
 // Keyboard support
 window.addEventListener('keydown', (event) => {
   const key = event.key;
-  const button = getButtonFromKey(key);
-
-  if (button) {
-    event.preventDefault();
-    attachPressEffects(button, event);
-  }
-
+  
   if (/^[0-9]$/.test(key)) {
+    event.preventDefault();
     appendValue(key);
+    const button = getButtonFromKey(key);
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === '.') {
+    event.preventDefault();
     appendValue('.');
+    const button = getButtonFromKey(key);
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === '+') {
+    event.preventDefault();
     appendValue('+');
+    const button = getButtonFromKey(key);
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === '-') {
+    event.preventDefault();
     appendValue('−');
+    const button = getButtonFromKey(key);
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === '*') {
+    event.preventDefault();
     appendValue('×');
+    const button = getButtonFromKey(key);
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === '/') {
     event.preventDefault();
     appendValue('÷');
+    const button = getButtonFromKey(key);
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === 'Enter' || key === '=') {
     event.preventDefault();
     evaluateExpression();
+    const button = getButtonFromKey('=');
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === 'Backspace') {
     event.preventDefault();
     backspace();
+    const button = document.querySelector('[data-action="backspace"]');
+    if (button) attachPressEffects(button, event);
     return;
   }
 
   if (key === 'Escape') {
+    event.preventDefault();
     clearAll();
+    const button = document.querySelector('[data-action="clear"]');
+    if (button) attachPressEffects(button, event);
   }
 });
 
