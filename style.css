@@ -45,7 +45,8 @@ body {
 .aurora,
 .vignette,
 .grain,
-.calculator__reflection {
+.calculator__reflection,
+.calculator__glow {
   pointer-events: none;
 }
 
@@ -131,6 +132,14 @@ body {
   transform: rotate(-12deg);
   background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.14) 48%, transparent 100%);
   opacity: 0.65;
+}
+
+.calculator__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 18%), rgba(130, 203, 255, 0.28), transparent 22%);
+  opacity: 0.55;
+  mix-blend-mode: screen;
 }
 
 .calculator__top {
@@ -231,35 +240,17 @@ h1 {
   transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, filter 180ms ease;
   position: relative;
   overflow: hidden;
+  --press-x: 50%;
+  --press-y: 35%;
 }
 
 .key::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.36), transparent 36%);
-  opacity: 0.45;
+  background: radial-gradient(circle at var(--press-x) var(--press-y), rgba(255,255,255,0.52), transparent 38%);
+  opacity: 0.36;
   transition: opacity 180ms ease;
-}
-
-.key:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255,255,255,0.24);
-  background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.12));
-}
-
-.key:hover::before {
-  opacity: 0.7;
-}
-
-.key:active,
-.key.is-pressed {
-  transform: translateY(1px) scale(0.975);
-  filter: brightness(1.08) saturate(1.1);
-}
-
-.key.is-pressed::before {
-  opacity: 0.9;
 }
 
 .key::after {
@@ -271,6 +262,34 @@ h1 {
   background: linear-gradient(180deg, rgba(255,255,255,0.42), transparent);
   opacity: 0.42;
   transform: translateY(-2px);
+}
+
+.key:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.24);
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.12));
+}
+
+.key:hover::before {
+  opacity: 0.55;
+}
+
+.key:active,
+.key.is-pressed {
+  transform: translateY(1px) scale(0.975);
+  filter: brightness(1.08) saturate(1.1);
+}
+
+.key.is-pressed {
+  animation: liquid-pulse 260ms cubic-bezier(.22,1.35,.36,1) both;
+}
+
+.key.is-pressed::before {
+  opacity: 0.95;
+}
+
+.key.is-pressed::after {
+  opacity: 0.72;
 }
 
 .key--operator {
@@ -297,12 +316,18 @@ h1 {
 .key--operator::before,
 .key--utility::before,
 .key--equal::before {
-  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.44), transparent 38%);
+  background: radial-gradient(circle at var(--press-x) var(--press-y), rgba(255,255,255,0.58), transparent 40%);
 }
 
 @keyframes drift {
   from { transform: translate3d(0, 0, 0) scale(1); }
   to { transform: translate3d(0, 28px, 0) scale(1.08); }
+}
+
+@keyframes liquid-pulse {
+  0% { box-shadow: inherit; }
+  35% { transform: translateY(1px) scale(0.965); }
+  100% { transform: translateY(1px) scale(0.975); }
 }
 
 @media (max-width: 480px) {
