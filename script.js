@@ -1,5 +1,6 @@
 const screen = document.getElementById('screen');
 const historyEl = document.getElementById('history');
+const glow = document.getElementById('calculatorGlow');
 
 let expression = '';
 let lastResult = '';
@@ -24,12 +25,20 @@ function sanitizeExpression(value) {
     .replace(/\s+/g, '');
 }
 
-function flashButton(button) {
+function setGlowPosition(x, y) {
+  if (!glow) return;
+  glow.style.setProperty('--glow-x', `${x}%`);
+  glow.style.setProperty('--glow-y', `${y}%`);
+}
+
+function flashButton(button, xPercent = 50, yPercent = 35) {
+  button.style.setProperty('--press-x', `${xPercent}%`);
+  button.style.setProperty('--press-y', `${yPercent}%`);
   button.classList.remove('is-pressed');
   void button.offsetWidth;
   button.classList.add('is-pressed');
   clearTimeout(button._pressTimer);
-  button._pressTimer = setTimeout(() => button.classList.remove('is-pressed'), 220);
+  button._pressTimer = setTimeout(() => button.classList.remove('is-pressed'), 260);
 }
 
 function clearAll() {
@@ -65,9 +74,16 @@ function handleValue(value) {
   updateDisplay();
 }
 
-document.querySelectorAll('button').forEach((button) => {
+document.querySelectorAll('.liquid-key').forEach((button) => {
+  button.addEventListener('pointerdown', (event) => {
+    const rect = button.getBoundingClientRect();
+    const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+    const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
+    flashButton(button, xPercent, yPercent);
+    setGlowPosition(xPercent, yPercent);
+  });
+
   button.addEventListener('click', () => {
-    flashButton(button);
     const value = button.innerText;
 
     if (value === 'AC') {
@@ -89,9 +105,16 @@ document.querySelectorAll('button').forEach((button) => {
   });
 });
 
+window.addEventListener('pointermove', (event) => {
+  const rect = document.querySelector('.calculator').getBoundingClientRect();
+  const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+  const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+  setGlowPosition(x, y);
+});
+
 window.addEventListener('keydown', (event) => {
   const key = event.key;
-  const button = [...document.querySelectorAll('button')].find((btn) => btn.innerText === key || (key === '*' && btn.innerText === '×') || (key === '/' && btn.innerText === '÷'));
+  const button = [...document.querySelectorAll('.liquid-key')].find((btn) => btn.innerText === key || (key === '*' && btn.innerText === '×') || (key === '/' && btn.innerText === '÷'));
 
   if (button) flashButton(button);
 
