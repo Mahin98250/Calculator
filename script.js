@@ -22,8 +22,13 @@ function formatNumber(value) {
 }
 
 function updateDisplay() {
-  expressionEl.innerText = expression || '0';
-  resultEl.innerText = lastResult && !justEvaluated ? formatNumber(lastResult) : '';
+  if (justEvaluated) {
+    expressionEl.innerText = '';
+    resultEl.innerText = expression || '0';
+  } else {
+    expressionEl.innerText = expression || '0';
+    resultEl.innerText = '';
+  }
 }
 
 function sanitizeExpression(value) {
@@ -123,24 +128,21 @@ function evaluateExpression() {
 
   try {
     const sanitized = sanitizeExpression(expression);
-    // Simple eval with validation
     const result = new Function(`'use strict'; return (${sanitized})`)();
     
     lastResult = result;
     expression = formatNumber(result);
-    resultEl.innerText = expression;
-    expressionEl.innerText = '';
     justEvaluated = true;
+    updateDisplay();
   } catch (error) {
-    resultEl.innerText = 'Error';
-    expressionEl.innerText = '';
-    expression = '';
+    expression = 'Error';
     lastResult = '';
     justEvaluated = false;
+    updateDisplay();
     
     // Reset after showing error
     setTimeout(() => {
-      updateDisplay();
+      clearAll();
     }, 1500);
   }
 }
@@ -208,12 +210,12 @@ function handleButtonAction(button) {
       justEvaluated = true;
       updateDisplay();
     } catch (error) {
-      expression = '';
+      expression = 'Error';
       lastResult = '';
-      resultEl.innerText = 'Error';
-      expressionEl.innerText = '';
+      justEvaluated = false;
+      updateDisplay();
       setTimeout(() => {
-        updateDisplay();
+        clearAll();
       }, 1500);
     }
     return;
