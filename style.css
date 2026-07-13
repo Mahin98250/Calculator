@@ -163,6 +163,8 @@ body {
   margin-bottom: 20px;
   position: relative;
   z-index: 1;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .eyebrow {
@@ -191,6 +193,38 @@ h1 {
   font-weight: 500;
   backdrop-filter: blur(12px);
   transition: all 200ms ease;
+}
+
+/* Install Button Styling */
+.install-button {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--blue-1), var(--blue-2));
+  border: 1px solid rgba(127, 197, 255, 0.3);
+  color: #ffffff;
+  font-size: 0.85rem;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.16),
+    0 8px 16px rgba(28, 130, 255, 0.26);
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 200ms ease;
+  border: none;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.install-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.32),
+    inset 0 -1px 0 rgba(0,0,0,0.2),
+    0 12px 20px rgba(28, 130, 255, 0.32);
+}
+
+.install-button:active {
+  transform: translateY(0px);
 }
 
 .display {
@@ -464,6 +498,8 @@ h1 {
 
   .calculator__top {
     margin-bottom: 14px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .eyebrow {
@@ -477,6 +513,12 @@ h1 {
   .mode-pill {
     font-size: 0.75rem;
     padding: 8px 12px;
+  }
+
+  .install-button {
+    font-size: 0.75rem;
+    padding: 8px 12px;
+    width: 100%;
   }
 
   .display {
@@ -602,6 +644,11 @@ h1 {
   outline-offset: 2px;
 }
 
+.install-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
   .key {
@@ -615,5 +662,9 @@ h1 {
 
   .key:hover::before {
     opacity: 0.36;
+  }
+
+  .install-button:hover {
+    transform: none;
   }
 }
